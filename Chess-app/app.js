@@ -11,6 +11,9 @@ const io = socket(server);
 const chess = new Chess();
 let players = {};
 let currentPlayer = "w";
+let score = { w: 0, b: 0 };
+let capturedPieces = { w: [], b: [] };
+const pieceValues = { p: 1, n: 3, b: 3, r: 5, q: 9 };
 
 app.set("view engine", "ejs")
 app.use(express.static(path.join(__dirname, "public")))
@@ -45,13 +48,23 @@ io.on("connection", (uniquesocket) => {
       if (chess.turn() === "w" && uniquesocket.id !== players.white) return;
       if (chess.turn() === "b" && uniquesocket.id !== players.black) return;
 
-      const result = chess.move(move)
+      const result = chess.move(move);
       if (result) {
-        currentPlayer = chess.turn()
+        if (result.captured) {
+          const capturedPiece = { type: result.captured, color: result.color === 'w' ? 'b' : 'w' };
+          if (result.color === 'w') {
+            score.w += pieceValues[capturedPiece.type];
+            capturedPieces.w.push(capturedPiece);
+          } else {
+            score.b += pieceValues[capturedPiece.type];
+            capturedPieces.b.push(capturedPiece);
+          }
+          io.emit("gameStateUpdate", { score, capturedPieces });
+        }
+        currentPlayer = chess.turn();
         io.emit("move", move);
-        io.emit("boardState", chess.fen())
-      }
-      else{
+        io.emit("boardState", chess.fen());
+      } else {
         console.log(`Invalid move : `,move)
         uniquesocket.emit(`InvalidMove`,move)
       }
