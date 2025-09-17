@@ -3,10 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-
+    <title>Chess Game</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap">
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
     <style>
+      body {
+        font-family: 'Merriweather', serif;
+      }
       .chessboard {
         display: grid;
         grid-template-columns: repeat(8, minmax(0, 1fr));
@@ -14,15 +17,16 @@
         width: 400px;
         height: 400px;
         transform: rotate(0deg);
+        border: 5px solid #333;
       }
 
       .piece.white {
-        color: white;
-        filter: drop-shadow(0 0 2px rgba(0, 0, 0, 1));
+        color: #fff;
+        text-shadow: 0 0 5px rgba(0,0,0,0.5);
       }
 
       .piece.black {
-        color: black;
+        color: #000;
       }
 
       .flipped {
@@ -36,11 +40,11 @@
       }
 
       .square.light {
-        background-color: #f0d9b5;
+        background-color: #e2e8f0; /* slate-200 */
       }
 
       .square.dark {
-        background-color: #b58863;
+        background-color: #64748b; /* slate-500 */
       }
 
       .piece {
@@ -60,11 +64,42 @@
       .flipped .piece {
         transform: rotate(180deg);
       }
+
+      .last-move {
+        background-color: #fde047; /* yellow-300 */
+      }
+
+      .in-check {
+        background-color: #ef4444; /* red-500 */
+      }
     </style>
   </head>
-  <body>
-    <div class="w-full h-screen bg-zinc-900 flex justify-center items-center">
+  <body class="bg-zinc-900 text-white">
+    <div class="w-full h-screen flex justify-center items-center">
+      <div class="w-1/4 p-4">
+        <h2 class="text-2xl font-bold mb-4">Game Info</h2>
+        <div id="game-info">
+          <p><strong>Player Role:</strong> <span id="player-role"></span></p>
+          <p><strong>Current Turn:</strong> <span id="current-turn"></span></p>
+        </div>
+        <div id="captured-pieces" class="mt-4">
+          <h3 class="text-xl font-semibold">Captured Pieces</h3>
+          <div id="white-captured" class="mt-2">
+            <p><strong>White:</strong> <span id="white-captured-pieces"></span></p>
+          </div>
+          <div id="black-captured" class="mt-2">
+            <p><strong>Black:</strong> <span id="black-captured-pieces"></span></p>
+          </div>
+        </div>
+      </div>
       <div class="chessboard w-96 h-96 bg-red-800"></div>
+      <div class="w-1/4 p-4">
+        <h2 class="text-2xl font-bold mb-4">Score</h2>
+        <div id="score">
+          <p><strong>White:</strong> <span id="white-score">0</span></p>
+          <p><strong>Black:</strong> <span id="black-score">0</span></p>
+        </div>
+      </div>
     </div>
 
     <script
